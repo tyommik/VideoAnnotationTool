@@ -45,6 +45,7 @@ class Player(QMainWindow):
         self.isPaused = False
 
         self.setMouseTracking(True)
+        self.size = None
 
     def createUI(self):
         """Set up the user interface, signals & slots
@@ -202,15 +203,18 @@ class Player(QMainWindow):
                 # this will fix it
                 self.Stop()
 
-    def mouseMoveEvent(self, event):
-        if self.size is not None:
-            video_width, video_height = self.size
+    def get_coordinates(self):
+        return self.mediaplayer.video_get_cursor()
 
-        print(self.videoframe.size())
-        distance_from_center = round(((event.y() - 250)**2 + (event.x() - 500)**2)**0.5)
-        #self.label.setText('Coordinates: ( %d : %d )' % (event.x(), event.y()) + "Distance from center: " + str(distance_from_center))
-        #self.coordinates.setText('Coordinates: ( %d : %d )' % (event.x(), event.y()) + "Distance from center: " + str(distance_from_center))
-        self.coordinates.setText(f'Coordinates: {event.x() * (video_width / self.videoframe.size()[0])}, {event.y() * (video_height / self.videoframe.size()[1])}')
+    def mouseMoveEvent(self, event):
+        print(self.mediaplayer.video_get_cursor())
+        if isinstance(self.size, tuple):
+            video_width, video_height = self.size
+        else:
+            video_width, video_height = 0, 0
+        # self.coordinates.setText('Coordinates: ( %d : %d )' % (event.x(), event.y()) + "Distance from center: " + str(distance_from_center))
+        #self.coordinates.setText('Coordinates: ( %d : %d )' % (event.x() - 9, event.y() - 30) + "Distance from center: ")
+        self.coordinates.setText(f'Coordinates: {self.get_coordinates()[0]}, {self.get_coordinates()[1]}. Video size {video_height} {video_width}')
         self.pos = event.pos()
         self.update()
 
